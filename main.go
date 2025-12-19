@@ -458,9 +458,17 @@ func (f *BaseForger) AppConfig() (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"APP_NAME":   name,
-		"APP_URL":    appURL,
-		"APP_DOMAIN": u.Hostname(),
+		"APP_NAME":               name,
+		"APP_URL":                appURL,
+		"APP_DOMAIN":             u.Hostname(),
+		"APP_ENV":                string(f.Project.Env),
+		"APP_DEBUG":              "false",
+		"APP_FAKER_LOCALE":       "en_US",
+		"APP_FALLBACK_LOCALE":    "en",
+		"APP_LOCALE":             "en",
+		"APP_MAINTENANCE_DRIVER": "file",
+		"BCRYPT_ROUNDS":          "12",
+		"PHP_CLI_SERVER_WORKERS": "4",
 	}, nil
 }
 
@@ -515,10 +523,10 @@ func (f *BaseForger) CacheConfig() (map[string]string, error) {
 	var driver string
 	form := huh.NewForm(
 		huh.NewGroup(
-			huh.NewSelect[string]().Title("Cache Driver").Options(
-				huh.NewOption("redis", "Redis"),
-				huh.NewOption("database", "Database"),
-				huh.NewOption("file", "File"),
+			huh.NewSelect[string]().Title("Cache Store").Options(
+				huh.NewOption("Redis", "redis"),
+				huh.NewOption("Database", "database"),
+				huh.NewOption("File", "file"),
 			).Value(&driver),
 		),
 	)
@@ -528,7 +536,7 @@ func (f *BaseForger) CacheConfig() (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"CACHE_DRIVER": driver,
+		"CACHE_STORE":  driver,
 		"CACHE_PREFIX": fmt.Sprintf("%s_cache_", f.Project.Slug),
 	}, nil
 }
@@ -538,9 +546,9 @@ func (f *BaseForger) SessionConfig() (map[string]string, error) {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().Title("Session Driver").Options(
-				huh.NewOption("redis", "Redis"),
-				huh.NewOption("database", "Database"),
-				huh.NewOption("file", "File"),
+				huh.NewOption("Redis", "redis"),
+				huh.NewOption("Database", "database"),
+				huh.NewOption("File", "file"),
 			).Value(&driver),
 		),
 	)
@@ -550,7 +558,11 @@ func (f *BaseForger) SessionConfig() (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"SESSION_DRIVER": driver,
+		"SESSION_DRIVER":   driver,
+		"SESSION_LIFETIME": "120",
+		"SESSION_ENCRYPT":  "true",
+		"SESSION_PATH":     "/",
+		"SESSION_DOMAIN":   "${APP_DOMAIN}",
 	}, nil
 }
 
@@ -559,9 +571,9 @@ func (f *BaseForger) QueueConfig() (map[string]string, error) {
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().Title("Queue Driver").Options(
-				huh.NewOption("redis", "Redis"),
-				huh.NewOption("database", "Database"),
-				huh.NewOption("sync", "Sync"),
+				huh.NewOption("Redis", "redis"),
+				huh.NewOption("Database", "database"),
+				huh.NewOption("Sync", "sync"),
 			).Value(&driver),
 		),
 	)
@@ -587,8 +599,8 @@ func (f *BaseForger) BroadcastingConfig() (map[string]string, error) {
 					return "Broadcasting Driver"
 				}, nil).
 				Options(
-					huh.NewOption("redis", "Redis"),
-					huh.NewOption("reverb", "Reverb"),
+					huh.NewOption("Redis", "redis"),
+					huh.NewOption("Reverb", "reverb"),
 				).Value(&driver),
 		),
 	)
@@ -614,9 +626,16 @@ func (f *BaseForger) LogConfig() (map[string]string, error) {
 		return nil, err
 	}
 
+	logLevel := "debug"
+	if f.Project.Env == EnvProduction {
+		logLevel = "info"
+	}
+
 	return map[string]string{
-		"LOG_CHANNEL": "stack",
-		"LOG_STACK":   logStack,
+		"LOG_CHANNEL":              "stack",
+		"LOG_STACK":                logStack,
+		"LOG_DEPRECATIONS_CHANNEL": "null",
+		"LOG_LEVEL":                logLevel,
 	}, nil
 }
 
