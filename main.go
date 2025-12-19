@@ -233,6 +233,7 @@ func (f *BaseForger) Run(p Project) error {
 	configs := []func() (map[string]string, error){
 		f.AppConfig,
 		f.AWSConfig,
+		f.FilesystemConfig,
 		f.CacheConfig,
 		f.SessionConfig,
 		f.QueueConfig,
@@ -487,6 +488,26 @@ func (f *BaseForger) AWSConfig() (map[string]string, error) {
 		"AWS_DEFAULT_REGION":    region,
 		"AWS_BUCKET":            bucket,
 		"AWS_ENDPOINT":          endpoint,
+	}, nil
+}
+
+func (f *BaseForger) FilesystemConfig() (map[string]string, error) {
+	var disk string
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().Title("Filesystem Disk").Options(
+				huh.NewOption("local", "local"),
+				huh.NewOption("s3", "s3"),
+			).Value(&disk),
+		),
+	)
+
+	if err := form.Run(); err != nil {
+		return nil, err
+	}
+
+	return map[string]string{
+		"FILESYSTEM_DISK": disk,
 	}, nil
 }
 
