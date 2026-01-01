@@ -155,8 +155,8 @@ func main() {
 			huh.NewSelect[Env]().
 				Title("Deployment Environment").
 				Options(
-					huh.NewOption[Env](string(EnvProduction), "Production"),
-					huh.NewOption[Env](string(EnvStaging), "Staging"),
+					huh.NewOption("Production", EnvProduction),
+					huh.NewOption("Staging", EnvStaging),
 				).
 				Value(&project.Env),
 		),
@@ -459,6 +459,7 @@ func (f *BaseForger) AppConfig() (map[string]string, error) {
 
 	return map[string]string{
 		"APP_NAME":               name,
+		"VITE_APP_NAME":          "${APP_NAME}",
 		"APP_URL":                appURL,
 		"APP_DOMAIN":             u.Hostname(),
 		"APP_ENV":                string(f.Project.Env),
@@ -610,7 +611,7 @@ func (f *BaseForger) BroadcastingConfig() (map[string]string, error) {
 	}
 
 	return map[string]string{
-		"BROADCAST_DRIVER": driver,
+		"BROADCAST_CONNECTION": driver,
 	}, nil
 }
 
