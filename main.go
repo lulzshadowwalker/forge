@@ -474,7 +474,7 @@ func (f *BaseForger) AppConfig() (map[string]string, error) {
 }
 
 func (f *BaseForger) AWSConfig() (map[string]string, error) {
-	var key, secret, region, bucket, endpoint string
+	var key, secret, region, bucket, endpoint, url string
 	region = "auto"
 
 	form := huh.NewForm(
@@ -484,6 +484,7 @@ func (f *BaseForger) AWSConfig() (map[string]string, error) {
 			huh.NewInput().Title("AWS_DEFAULT_REGION").Value(&region),
 			huh.NewInput().Title("AWS_BUCKET").Value(&bucket),
 			huh.NewInput().Title("AWS_ENDPOINT").Value(&endpoint),
+			huh.NewInput().Title("AWS_URL").Value(&url),
 		).Title("AWS Configuration"),
 	)
 
@@ -497,6 +498,7 @@ func (f *BaseForger) AWSConfig() (map[string]string, error) {
 		"AWS_DEFAULT_REGION":    region,
 		"AWS_BUCKET":            bucket,
 		"AWS_ENDPOINT":          endpoint,
+		"AWS_URL":               url,
 	}, nil
 }
 
