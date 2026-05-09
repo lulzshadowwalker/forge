@@ -379,7 +379,7 @@ func (f *BaseForger) SQLConfig() string {
 
 	return fmt.Sprintf(
 		`CREATE DATABASE %s CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER '%s'@'%%' IDENTIFIED BY '%s';
+CREATE USER '%s'@'%%' IDENTIFIED WITH mysql_native_password BY '%s';
 GRANT ALL PRIVILEGES ON %s.* TO '%s'@'%%';
 FLUSH PRIVILEGES;
 `, config["DB_DATABASE"], config["DB_USERNAME"], config["DB_PASSWORD"], config["DB_DATABASE"], config["DB_USERNAME"])
